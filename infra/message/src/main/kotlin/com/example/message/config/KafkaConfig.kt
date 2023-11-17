@@ -14,6 +14,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.core.ProducerFactory
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
+import org.springframework.kafka.support.serializer.JsonDeserializer
+import org.springframework.kafka.support.serializer.JsonSerializer
 import reactor.kafka.sender.SenderOptions
 
 @Configuration
@@ -30,7 +32,7 @@ class KafkaConfig(private val messageProps: MessageProperties) {
     fun kafkaProducerFactory(): ProducerFactory<String, Any>{
         val configProps = getKafkaConfigBase()
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
 
         return DefaultKafkaProducerFactory(configProps);
     }
@@ -41,14 +43,14 @@ class KafkaConfig(private val messageProps: MessageProperties) {
         configProps[ConsumerConfig.GROUP_ID_CONFIG] = "1"
 
         configProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-        configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+        configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = JsonDeserializer::class.java
 
         return DefaultKafkaConsumerFactory(configProps)
     }
 
     fun getKafkaConfigBase(): MutableMap<String, Any>{
         val configProps = HashMap<String, Any>()
-        configProps[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = messageProps.kafka.bootstrapServer
+        configProps[CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG] = messageProps.kafka.bootstrapServers
 
         configProps["sasl.mechanism"] = "PLAIN"
         configProps["metadata.max.age.ms"] = "10800000" // 3hour

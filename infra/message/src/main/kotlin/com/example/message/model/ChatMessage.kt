@@ -1,7 +1,7 @@
-package com.example.api.model.messages
+package com.example.message.model
 
-data class ChatMessage(
+data class ChatMessage (
     val roomId: String,
     val senderId: String,
     val message: String
-)
+    )

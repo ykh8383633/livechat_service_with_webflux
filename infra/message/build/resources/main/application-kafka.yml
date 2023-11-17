@@ -1,7 +1,6 @@
 spring:
-
   kafka:
-    bootstrap-servers: localhost:9093
+    bootstrapServers: localhost:9093
     topics:
       inMessage: in-message
       outMessage: out-message

@@ -2,8 +2,8 @@ package com.example.api.service
 
 import com.example.api.component.ChatManager
 import com.example.api.component.ChatUser
-import com.example.api.model.messages.ChatMessage
 import com.example.message.config.properties.MessageProperties
+import com.example.message.model.ChatMessage
 import org.springframework.stereotype.Service
 import com.example.message.publisher.Publisher
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -14,15 +14,16 @@ class ChatService(
     private val messageProps: MessageProperties,
     private val chatManager: ChatManager
 ) {
+    private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
 
-    fun registUser(roomId: String, session: WebSocketSession){
+    fun registerUser(roomId: String, session: WebSocketSession){
         val user = ChatUser(session, "1")
-        chatManager.registUser(roomId, user);
+        chatManager.registerUser(roomId, user);
         broadcastToRoom(user.userId, roomId, "사용자가 입장하였습니다.");
     }
 
     fun broadcastToRoom(useId: String, roomId: String, message: String){
-        publisher.publish(messageProps.kafka.topicProperties.outMessage, ChatMessage(roomId, useId, message))
+        publisher.publish(OUT_MESSAGE, ChatMessage(roomId, useId, message))
     }
 
 }

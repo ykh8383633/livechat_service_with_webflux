@@ -13,7 +13,7 @@ class ChatWebSocketHandler(
 ): WebSocketHandler {
     override fun handle(session: WebSocketSession): Mono<Void> {
 
-        chatService.registUser("1", session);
+        chatService.registerUser("1", session);
 
         return session.receive()
             .doOnNext({})
