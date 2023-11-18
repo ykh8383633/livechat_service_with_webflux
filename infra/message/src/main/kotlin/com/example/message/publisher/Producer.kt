@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component
 
 @Component
 class Producer(
-    private val producerTemplate: ReactiveKafkaProducerTemplate<String, Any>
+    private val producerTemplate: ReactiveKafkaProducerTemplate<String, String>
 ): Publisher {
 
     //private val logger = KotlinLogging.logger {}
 
-    override fun publish(topic: String, message: Any) {
+    override fun publish(topic: String, message: String) {
         val sendResult = producerTemplate.send(topic, message)
 
         sendResult
@@ -22,7 +22,7 @@ class Producer(
             .subscribe()
     }
 
-    override fun publish(topic: String, key: String, message: Any) {
+    override fun publish(topic: String, key: String, message: String) {
         val sendResult = producerTemplate.send(topic, key, message)
 
         sendResult

@@ -16,7 +16,7 @@ class ChatWebSocketHandler(
         chatService.registerUser("1", session);
 
         return session.receive()
-            .doOnNext({})
+            .map{it}
             .then()
     }
 }

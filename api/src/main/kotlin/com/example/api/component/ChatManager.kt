@@ -4,9 +4,15 @@ import org.springframework.stereotype.Component
 
 @Component
 class ChatManager {
-    private val rooms = HashMap<String, ChatRoom>()
+    private val rooms = mutableMapOf<String, ChatRoom>()
+
 
     fun registerUser(roomId: String, user: ChatUser){
-        rooms.getOrElse(roomId) { rooms.put(roomId, ChatRoom()) }?.registerUser(user)
+        rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
+    }
+
+    fun broadcastToRoom(roomId: String, senderId: String, message: String){
+        val room = rooms.getOrDefault(roomId, null) ?: return
+        room.broadCast(senderId, message);
     }
 }

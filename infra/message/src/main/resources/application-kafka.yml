@@ -1,5 +1,9 @@
 spring:
   kafka:
+    properties:
+      spring:
+        json:
+          value.default.type=
     bootstrapServers: localhost:9093
     topics:
       inMessage: in-message

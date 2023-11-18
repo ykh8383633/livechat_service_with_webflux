@@ -23,27 +23,27 @@ import reactor.kafka.sender.SenderOptions
 class KafkaConfig(private val messageProps: MessageProperties) {
 
     @Bean
-    fun reactiveKafkaProducerTemplate(producerFactory: ProducerFactory<String, Any>): ReactiveKafkaProducerTemplate<String, Any>{
-        val options = SenderOptions.create<String, Any>(producerFactory.configurationProperties)
+    fun reactiveKafkaProducerTemplate(producerFactory: ProducerFactory<String, String>): ReactiveKafkaProducerTemplate<String, String>{
+        val options = SenderOptions.create<String, String>(producerFactory.configurationProperties)
         return ReactiveKafkaProducerTemplate(options)
     }
 
     @Bean
-    fun kafkaProducerFactory(): ProducerFactory<String, Any>{
+    fun kafkaProducerFactory(): ProducerFactory<String, String>{
         val configProps = getKafkaConfigBase()
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = JsonSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
 
         return DefaultKafkaProducerFactory(configProps);
     }
 
     @Bean
-    fun kafkaConsumerFactory(): ConsumerFactory<String, Any> {
+    fun kafkaConsumerFactory(): ConsumerFactory<String, String> {
         val configProps = getKafkaConfigBase()
         configProps[ConsumerConfig.GROUP_ID_CONFIG] = "1"
 
         configProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-        configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = JsonDeserializer::class.java
+        configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
 
         return DefaultKafkaConsumerFactory(configProps)
     }

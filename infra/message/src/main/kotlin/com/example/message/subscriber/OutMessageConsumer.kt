@@ -12,28 +12,30 @@ import java.util.*
 
 @Component
 class OutMessageConsumer(
-    private val kafkaConsumerFactory: ConsumerFactory<String, Any>,
-    private val outMessageChannel: OutMessageChannel
+    private val kafkaConsumerFactory: ConsumerFactory<String, String>,
+    private val outMessageChannel: OutMessageChannel,
+    private val handlers: MutableList<MessageHandler>
 ) : Subscriber {
     override val channels: MutableList<Channel> = mutableListOf(outMessageChannel)
     private val consumer = reactiveKafkaConsumerTemplate();
-    private val messageHandlers = mutableListOf<MessageHandler>()
+    private val messageHandlers = handlers
 
     init {
         consumer
             .receiveAutoAck()
             .map{it.value()}
-            .doOnNext{
+            .doOnNext{message ->
+                println("consume: $message")
                 messageHandlers.forEach{ handler ->
-                    handler.handle(it)
+                    handler.handle(message)
                 }
             }
             .subscribe()
     }
 
-    private fun reactiveKafkaConsumerTemplate(): ReactiveKafkaConsumerTemplate<String, ChatMessage>{
-        val receiverOptions: ReceiverOptions<String, ChatMessage> =
-            ReceiverOptions.create<String?, ChatMessage?>(kafkaConsumerFactory.configurationProperties)
+    private fun reactiveKafkaConsumerTemplate(): ReactiveKafkaConsumerTemplate<String, String>{
+        val receiverOptions: ReceiverOptions<String, String> =
+            ReceiverOptions.create<String?, String?>(kafkaConsumerFactory.configurationProperties)
                 .subscription(channels.map { channel -> channel.channelName })
 
         return ReactiveKafkaConsumerTemplate(receiverOptions)
