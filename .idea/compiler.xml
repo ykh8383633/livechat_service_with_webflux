@@ -9,7 +9,9 @@
         </processorPath>
         <module name="liveChat.infra.main" />
         <module name="liveChat.api.main" />
+        <module name="liveChat.pipelines.spamProcessor.main" />
         <module name="liveChat.infra.message.main" />
+        <module name="liveChat.pipelines.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

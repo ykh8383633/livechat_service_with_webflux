@@ -12,6 +12,8 @@
             <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/infra" />
             <option value="$PROJECT_DIR$/infra/message" />
+            <option value="$PROJECT_DIR$/pipelines" />
+            <option value="$PROJECT_DIR$/pipelines/spamProcessor" />
           </set>
         </option>
       </GradleProjectSettings>
