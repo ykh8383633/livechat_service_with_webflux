@@ -1,7 +1,10 @@
 package com.example.message.publisher
 
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
+import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
+import reactor.kafka.sender.SenderResult
 
 @Component
 class Producer(
@@ -11,10 +14,7 @@ class Producer(
     //private val logger = KotlinLogging.logger {}
 
     override fun publish(topic: String, message: String) {
-        val sendResult = producerTemplate.send(topic, message)
-
-        sendResult
-            .doOnSuccess {
+        producerTemplate.send(topic, message).doOnSuccess {
                 //logger.debug("${this::class.simpleName} send message : $message, offset: ${it.recordMetadata().offset()}")
                 println("publish $topic message: $message metaData: ${it.recordMetadata()}")
             }

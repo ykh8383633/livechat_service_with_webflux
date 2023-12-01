@@ -12,11 +12,15 @@ class ChatWebSocketHandler(
     private val chatService: ChatService
 ): WebSocketHandler {
     override fun handle(session: WebSocketSession): Mono<Void> {
-
-        chatService.registerUser("1", session);
-
-        return session.receive()
-            .map{it}
-            .then()
+        val roomId = "1"
+        return Mono.just(roomId)
+            .map{chatService.registerUser(it, session)}
+            .then(
+                session.receive()
+                    .map{it.payloadAsText}
+                    .doOnNext{chatService.inMessage("1", "1", it)}
+                    .doOnComplete{session.close()}
+                    .then()
+            )
     }
 }
