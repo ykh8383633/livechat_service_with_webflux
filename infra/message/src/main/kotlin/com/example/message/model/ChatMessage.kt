@@ -1,7 +1,11 @@
 package com.example.message.model
 
-data class ChatMessage (
+ class ChatMessage (
     val roomId: String,
     val senderId: String,
-    val message: String
-    )
+    val message: String,
+    var valid: Boolean?
+){
+     constructor(roomId: String, senderId: String, message: String): this(roomId, senderId, message, false)
+
+ }

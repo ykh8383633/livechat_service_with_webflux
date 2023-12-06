@@ -39,4 +39,15 @@ services:
     depends_on:
       - zookeeper
 
+  redis-livechat:
+    image: redis:7.0
+    container_name: redis-livechat
+    ports:
+      - "26379:6379"
+    volumes:
+      - livechat-redis-volume:/usr/local/etc/redis
+
+volumes:
+  livechat-redis-volume:
+    driver: local
 

@@ -12,14 +12,11 @@ import org.springframework.stereotype.Component
 class OutMessageHandler(
     private val chatManager: ChatManager,
     private val objectMapper: ObjectMapper,
-    override val channel: OutMessageChannel
+    override val subscribedChannel: OutMessageChannel
 ): MessageHandler {
     override fun handle(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
         println("roomId: ${chatMessage.roomId}, userId: ${chatMessage.senderId}")
-        val chatRoom = chatMessage.roomId;
-        val senderId = chatMessage.senderId;
-        val contents = chatMessage.message
-        chatManager.broadcastToRoom(chatRoom, senderId, contents);
+        chatManager.broadcastToRoom(chatMessage);
     }
 }

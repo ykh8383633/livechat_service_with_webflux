@@ -1,11 +1,12 @@
 package com.example.api.component
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.kotlin.core.publisher.toMono
 
 class ChatUser(
     val session: WebSocketSession,
-    val userId: String
+    val userId: String,
 ) {
 
     fun sendMessage(sender: ChatUser, message: String){

@@ -20,10 +20,11 @@ class ChatService(
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
     private val IN_MESSAGE = messageProps.kafka.topics.inMessage
 
-    fun registerUser(roomId: String, session: WebSocketSession){
-        val user = ChatUser(session, "1")
+    fun registerUser(roomId: String, userId: String, session: WebSocketSession){
+        val user = ChatUser(session, userId)
         chatManager.registerUser(roomId, user);
-        broadcastToRoom(user.userId, roomId, "사용자가 입장하였습니다.");
+        val chat = ChatMessage(roomId, user.userId, "사용자가 입장하였습니다.", true)
+        broadcastToRoom(chat);
     }
 
     fun inMessage(roomId: String, senderId: String, message: String){
@@ -32,8 +33,11 @@ class ChatService(
         publisher.publish(IN_MESSAGE, json)
     }
 
-    fun broadcastToRoom(useId: String, roomId: String, message: String){
-        publisher.publish(OUT_MESSAGE, objectMapper.writeValueAsString(ChatMessage(roomId, useId, message)))
+    fun broadcastToRoom(chat: ChatMessage){
+        publisher.publish(OUT_MESSAGE,
+            objectMapper.writeValueAsString(ChatMessage(chat.roomId, chat.senderId, chat.message, chat.valid)))
     }
+
+
 
 }

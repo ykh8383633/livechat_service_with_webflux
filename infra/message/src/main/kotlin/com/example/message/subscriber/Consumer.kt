@@ -13,9 +13,9 @@ class Consumer(
     private val kafkaConsumerFactory: ConsumerFactory<String, String>,
     private val handlers: MutableList<MessageHandler>
 ) : Subscriber {
-    override val channels: MutableSet<Channel> = handlers.map{it.channel}.toMutableSet()
+    override val channels: MutableSet<Channel> = handlers.map{it.subscribedChannel}.toMutableSet()
     private val consumerTemplate = reactiveKafkaConsumerTemplate();
-    private val handlerMap: MutableMap<String, MutableList<MessageHandler>> = initHandlerMap()
+    private val handlerMap: MutableMap<String, MutableList<MessageHandler>> = initHandlers()
 
     init {
         if(handlers.isNotEmpty()){
@@ -42,11 +42,11 @@ class Consumer(
         return ReactiveKafkaConsumerTemplate(receiverOptions)
     }
 
-    private fun initHandlerMap(): MutableMap<String, MutableList<MessageHandler>>{
+    private fun initHandlers(): MutableMap<String, MutableList<MessageHandler>>{
          val map = mutableMapOf<String, MutableList<MessageHandler>>()
 
         handlers.forEach{
-            val handlerList = map.getOrPut(it.channel.channelName){ mutableListOf() }
+            val handlerList = map.getOrPut(it.subscribedChannel.channelName){ mutableListOf() }
             handlerList.add(it)
         }
 

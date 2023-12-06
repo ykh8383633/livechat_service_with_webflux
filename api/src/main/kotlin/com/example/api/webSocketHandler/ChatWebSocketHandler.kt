@@ -7,20 +7,58 @@ import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
+import java.net.URI
+import java.net.URLDecoder
 
 class ChatWebSocketHandler(
     private val chatService: ChatService
 ): WebSocketHandler {
     override fun handle(session: WebSocketSession): Mono<Void> {
-        val roomId = "1"
+        val url = session.handshakeInfo.uri;
+        val roomId = getRoomId(url)
+        val userId = getUserId(url)
         return Mono.just(roomId)
-            .map{chatService.registerUser(it, session)}
+            .map{chatService.registerUser(it, userId, session)}
             .then(
                 session.receive()
                     .map{it.payloadAsText}
-                    .doOnNext{chatService.inMessage("1", "1", it)}
+                    .doOnNext{chatService.inMessage(roomId, userId, it)}
                     .doOnComplete{session.close()}
                     .then()
             )
+    }
+
+    private fun getRoomId(url: URI): String {
+        return "1";
+    }
+
+    private fun getUserId(url: URI): String{
+        val queries = parseQueryString(url);
+        val userId = queries["user-id"]
+
+        if(userId.isNullOrEmpty()){
+            throw Exception("user id cannot be empty!");
+        }
+
+        return userId;
+    }
+
+    private fun parseQueryString(uri: URI): Map<String, String> {
+        val queryPairs = mutableMapOf<String, String>()
+
+        val query: String? = uri.query
+        if (!query.isNullOrEmpty()) {
+            val pairs = query.split("&")
+
+            val encoding = "UTF-8"
+            pairs.filter { it.isNotEmpty() }
+                .forEach {
+                val idx = it.indexOf("=")
+                queryPairs[URLDecoder.decode(it.substring(0, idx), encoding)] =
+                    URLDecoder.decode(it.substring(idx + 1), encoding)
+            }
+        }
+
+        return queryPairs
     }
 }
