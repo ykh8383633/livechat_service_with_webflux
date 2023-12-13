@@ -15,3 +15,5 @@ include("pipelines:spamProcessor")
 findProject(":pipelines:spamProcessor")?.name = "spamProcessor"
 include("infra:redis")
 findProject(":infra:redis")?.name = "redis"
+include("pipelines:recentChatProcessor")
+findProject(":pipelines:recentChatProcessor")?.name = "recentChatProcessor"

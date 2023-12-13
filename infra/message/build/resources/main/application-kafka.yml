@@ -8,3 +8,5 @@ spring:
     topics:
       inMessage: in-message
       outMessage: out-message
+      doneSpamProcess: done-spam-process
+

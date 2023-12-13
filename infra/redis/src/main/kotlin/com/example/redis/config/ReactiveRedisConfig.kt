@@ -1,4 +1,4 @@
-package config
+package com.example.redis.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -18,7 +18,7 @@ class ReactiveRedisConfig(
 ) {
 
     @Bean
-    fun redisConnectionFactory(): ReactiveRedisConnectionFactory{
+    fun redisConnFactory(): ReactiveRedisConnectionFactory{
         return LettuceConnectionFactory(host, port);
     }
 

@@ -7,12 +7,13 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.boot/spring-boot-configuration-processor/3.1.5/c2d86601444174123b1413e06051a5b9eb0576/spring-boot-configuration-processor-3.1.5.jar" />
         </processorPath>
-        <module name="liveChat.infra.main" />
         <module name="liveChat.api.main" />
         <module name="liveChat.infra.redis.main" />
-        <module name="liveChat.pipelines.spamProcessor.main" />
         <module name="liveChat.infra.message.main" />
         <module name="liveChat.pipelines.main" />
+        <module name="liveChat.infra.main" />
+        <module name="liveChat.pipelines.recentChatProcessor.main" />
+        <module name="liveChat.pipelines.spamProcessor.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

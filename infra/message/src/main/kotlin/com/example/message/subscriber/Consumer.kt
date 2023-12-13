@@ -6,6 +6,8 @@ import com.example.message.subscriber.handler.MessageHandler
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.kafka.receiver.ReceiverOptions
 
 @Component
@@ -21,13 +23,18 @@ class Consumer(
         if(handlers.isNotEmpty()){
             consumerTemplate
                 .receiveAutoAck()
-                .doOnNext{consumerRecord ->
+                .flatMap{consumerRecord ->
                     val message = consumerRecord.value()
                     val topic = consumerRecord.topic()
 
                     println("consume: $message")
-                    handlerMap.getOrDefault(topic, mutableListOf())
-                        .forEach{it.handle(message)}
+                    Flux.fromIterable(handlerMap.getOrDefault(topic, mutableListOf()))
+                        .zipWith(Mono.just(message))
+                }
+                .doOnNext{zip ->
+                    val handler = zip.t1;
+                    val message = zip.t2;
+                    handler.handle(message);
                 }
                 .subscribe()
         }

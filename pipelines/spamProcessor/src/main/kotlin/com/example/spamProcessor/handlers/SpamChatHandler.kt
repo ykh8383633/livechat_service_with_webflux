@@ -1,6 +1,7 @@
 package com.example.spamProcessor.handlers
 
 import com.example.message.channel.Channel
+import com.example.message.channel.DoneSpamProcessChannel
 import com.example.message.channel.InMessageChannel
 import com.example.message.channel.OutMessageChannel
 import com.example.message.model.ChatMessage
@@ -14,7 +15,7 @@ class SpamChatHandler(
     private val publisher: Publisher,
     private val objectMapper: ObjectMapper,
     override val subscribedChannel: InMessageChannel,
-    private val pubChannel: OutMessageChannel,
+    private val pubChannel: DoneSpamProcessChannel,
 ): MessageHandler {
     override fun handle(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
