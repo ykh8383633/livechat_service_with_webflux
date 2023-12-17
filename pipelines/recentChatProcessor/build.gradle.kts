@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":domain"))
     implementation(project(":infra:message"))
     implementation(project(":infra:redis"))
 

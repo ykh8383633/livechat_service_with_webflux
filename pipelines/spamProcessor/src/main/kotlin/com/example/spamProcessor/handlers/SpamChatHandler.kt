@@ -1,10 +1,8 @@
 package com.example.spamProcessor.handlers
 
-import com.example.message.channel.Channel
 import com.example.message.channel.DoneSpamProcessChannel
 import com.example.message.channel.InMessageChannel
-import com.example.message.channel.OutMessageChannel
-import com.example.message.model.ChatMessage
+import com.example.domain.model.ChatMessage
 import com.example.message.publisher.Publisher
 import com.example.message.subscriber.handler.MessageHandler
 import com.fasterxml.jackson.databind.ObjectMapper

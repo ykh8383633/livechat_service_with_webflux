@@ -10,6 +10,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))

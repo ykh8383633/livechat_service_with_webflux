@@ -1,43 +1,55 @@
 package com.example.api.service
 
-import com.example.api.component.ChatManager
-import com.example.api.component.ChatUser
+import com.example.domain.model.ChatRoom
+import com.example.domain.model.ChatUser
 import com.example.message.config.properties.MessageProperties
-import com.example.message.model.ChatMessage
+import com.example.domain.model.ChatMessage
 import org.springframework.stereotype.Service
 import com.example.message.publisher.Publisher
+import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.reactive.socket.WebSocketSession
-import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 
 @Service
 class ChatService(
     private val publisher: Publisher,
     private val messageProps: MessageProperties,
-    private val chatManager: ChatManager,
+    private val redisService: RedisService,
     private val objectMapper: ObjectMapper
 ) {
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
     private val IN_MESSAGE = messageProps.kafka.topics.inMessage
+    private val rooms = mutableMapOf<String, ChatRoom>()
 
-    fun registerUser(roomId: String, userId: String, session: WebSocketSession){
+    fun registerUser(roomId: String, userId: String, session: WebSocketSession): ChatUser {
         val user = ChatUser(session, userId)
-        chatManager.registerUser(roomId, user);
-        val chat = ChatMessage(roomId, user.userId, "사용자가 입장하였습니다.", true)
-        broadcastToRoom(chat);
+        rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
+        return user;
     }
 
-    fun inMessage(roomId: String, senderId: String, message: String){
-        val chat = ChatMessage(roomId, senderId, message);
-        val json = objectMapper.writeValueAsString(chat);
-        publisher.publish(IN_MESSAGE, json)
+    fun inMessage(roomId: String, sender: ChatUser, message: String, valid: Boolean = false){
+        val room = rooms[roomId] ?: throw Exception("room can not be empty")
+        val chat = ChatMessage(room, sender, message, valid);
+
+        publisher.publish(IN_MESSAGE, objectMapper.writeValueAsString(chat))
+    }
+
+    fun outMessage(roomId: String, sender: ChatUser, message: String, valid: Boolean = false){
+        val room = rooms[roomId] ?: throw Exception("room can not be empty")
+        val chat = ChatMessage(room, sender, message, valid);
+
+        publisher.publish(OUT_MESSAGE, objectMapper.writeValueAsString(chat))
     }
 
     fun broadcastToRoom(chat: ChatMessage){
-        publisher.publish(OUT_MESSAGE,
-            objectMapper.writeValueAsString(ChatMessage(chat.roomId, chat.senderId, chat.message, chat.valid)))
+        val room = rooms.getOrDefault(chat.room.roomId, null) ?: return
+        val jsonChat = objectMapper.writeValueAsString(chat);
+        room.broadCast(chat.sender.userId, jsonChat);
     }
 
-
+    fun getRecentChat(roomId: String): Flux<ChatMessage> {
+        return redisService.getAll<ChatMessage>(roomId, ChatMessage::class.java)
+    }
 
 }
