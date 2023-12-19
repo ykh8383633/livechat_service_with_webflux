@@ -10,6 +10,7 @@ import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Flux
+import java.time.Instant
 
 @Service
 class ChatService(
@@ -50,6 +51,8 @@ class ChatService(
 
     fun getRecentChat(roomId: String): Flux<ChatMessage> {
         return redisService.getAll<ChatMessage>(roomId, ChatMessage::class.java)
+            .sort{c1, c2 -> c1.sendDate.compareTo(c2.sendDate)}
+            .doOnError{println(it.message)}
     }
 
 }

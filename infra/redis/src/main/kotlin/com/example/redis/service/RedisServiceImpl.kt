@@ -36,12 +36,12 @@ class RedisServiceImpl(
             }
     }
 
-    override fun trimLeft(key: String, index: Long){
-        trim(key, 0, index)
+    override fun trimLeft(key: String, index: Long): Mono<Boolean>{
+        return trim(key, 0, index)
     }
 
-    override fun trim(key: String, start: Long, end: Long){
-        listOps.trim(key, start, end);
+    override fun trim(key: String, start: Long, end: Long): Mono<Boolean>{
+        return listOps.trim(key, start, end);
     }
 
     override fun<TValue> getAll(key: String, clazz: Class<TValue>): Flux<TValue>{

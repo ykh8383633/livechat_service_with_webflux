@@ -8,8 +8,8 @@ interface RedisService {
     fun set(key: String, value: String): Mono<Boolean>
     fun <TValue> leftPush(key: String, value: TValue): Mono<Long>
     fun leftPush(key: String, value: String): Mono<Long>
-    fun trimLeft(key: String, index: Long)
-    fun trim(key: String, start: Long, end: Long)
+    fun trimLeft(key: String, index: Long): Mono<Boolean>
+    fun trim(key: String, start: Long, end: Long): Mono<Boolean>
     fun <TValue> getAll(key: String, clazz: Class<TValue>): Flux<TValue>
     fun getAll(key: String): Flux<String>
     fun <TValue> range(key: String, start: Long, end: Long, clazz: Class<TValue>): Flux<TValue>

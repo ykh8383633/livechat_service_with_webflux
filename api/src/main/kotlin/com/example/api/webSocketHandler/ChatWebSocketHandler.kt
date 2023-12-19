@@ -24,18 +24,16 @@ class ChatWebSocketHandler(
         val user = chatService.registerUser(roomId, userId, session)
 
         return chatService.getRecentChat(roomId)
-            .map{
-                user.sendMessage(it.sender, objectMapper.writeValueAsString(it))
-            }
+            .map{ user.sendMessage(it.sender, objectMapper.writeValueAsString(it)) }
             .doOnComplete{
                 val message = "${user.userId} 사용자가 입장했습니다."
                 chatService.outMessage(roomId, user, message, true)
             }
             .then(
                 session.receive()
-                    .map{it.payloadAsText}
-                    .doOnNext{chatService.inMessage(roomId, user, it)}
-                    .doOnComplete{session.close()}
+                    .map{ it.payloadAsText }
+                    .doOnNext{ chatService.inMessage(roomId, user, it) }
+                    .doOnComplete{ session.close() }
                     .then()
             )
     }
