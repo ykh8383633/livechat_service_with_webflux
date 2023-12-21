@@ -47,7 +47,17 @@ services:
     volumes:
       - livechat-redis-volume:/usr/local/etc/redis
 
+  mongo-livechat:
+    image: mongo
+    container_name: mongo-livechat
+    ports:
+      - "27017:27017"
+    volumes:
+      - livechat-mongo-volume:/data/db
+
 volumes:
   livechat-redis-volume:
+    driver: local
+  livechat-mongo-volume:
     driver: local
 

@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/infra" />
             <option value="$PROJECT_DIR$/infra/message" />
+            <option value="$PROJECT_DIR$/infra/persistence" />
             <option value="$PROJECT_DIR$/infra/redis" />
             <option value="$PROJECT_DIR$/pipelines" />
             <option value="$PROJECT_DIR$/pipelines/recentChatProcessor" />

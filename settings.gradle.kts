@@ -18,3 +18,5 @@ findProject(":infra:redis")?.name = "redis"
 include("pipelines:recentChatProcessor")
 findProject(":pipelines:recentChatProcessor")?.name = "recentChatProcessor"
 include("domain")
+include("infra:persistence")
+findProject(":infra:persistence")?.name = "persistence"

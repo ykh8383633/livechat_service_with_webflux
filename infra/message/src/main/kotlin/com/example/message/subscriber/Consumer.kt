@@ -59,6 +59,4 @@ class Consumer(
 
         return map
     }
-
-
 }
