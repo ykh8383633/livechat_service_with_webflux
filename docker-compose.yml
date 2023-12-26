@@ -54,6 +54,8 @@ services:
       - "27017:27017"
     volumes:
       - livechat-mongo-volume:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=livechat
 
 volumes:
   livechat-redis-volume:

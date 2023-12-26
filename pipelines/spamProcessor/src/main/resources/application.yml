@@ -3,7 +3,7 @@ spring:
     name: webfluxPractice
 
   profiles:
-    include: kafka
+    include: kafka, mongo
 
   lifecycle:
     timeout-per-shutdown-phase: 1m
