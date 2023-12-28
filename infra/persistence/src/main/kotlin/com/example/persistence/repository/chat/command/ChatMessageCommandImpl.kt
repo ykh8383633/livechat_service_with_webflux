@@ -12,9 +12,16 @@ class ChatMessageCommandImpl(
 ): ChatMessageCommand {
     private val chatMapper: ChatMessageMapper = ChatMessageMapper.INSTANCE;
 
-    override fun save(chat: ChatMessage) {
+    override fun update(chat: ChatMessage): Mono<ChatMessage> = save(chat)
+    override fun save(chat: ChatMessage): Mono<ChatMessage> {
         val chatEntity = chatMapper.toEntity(chat);
-        _repository.save(chatEntity).subscribe();
+        return _repository.save(chatEntity).map{
+            chat.id = it.id;
+            chat
+        };
     }
+
+
+
 
 }

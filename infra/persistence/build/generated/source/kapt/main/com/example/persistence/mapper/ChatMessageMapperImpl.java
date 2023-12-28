@@ -8,7 +8,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-12-26T23:43:09+0900",
+    date = "2023-12-29T00:42:19+0900",
     comments = "version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from kotlin-annotation-processing-gradle-1.8.22.jar, environment: Java 17.0.5 (Oracle Corporation)"
 )
 public class ChatMessageMapperImpl implements ChatMessageMapper {
@@ -23,6 +23,7 @@ public class ChatMessageMapperImpl implements ChatMessageMapper {
 
         chatMessageEntity.setRoomId( chatRoomRoomId( chat ) );
         chatMessageEntity.setSenderId( chatSenderUserId( chat ) );
+        chatMessageEntity.setId( chat.getId() );
         chatMessageEntity.setMessage( chat.getMessage() );
         chatMessageEntity.setValid( chat.getValid() );
         chatMessageEntity.setSendDate( chat.getSendDate() );

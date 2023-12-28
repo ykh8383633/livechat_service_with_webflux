@@ -27,12 +27,21 @@ class ChatWebSocketHandler(
             .map{ user.sendMessage(it.sender, objectMapper.writeValueAsString(it)) }
             .doOnComplete{
                 val message = "${user.userId} 사용자가 입장했습니다."
-                chatService.outMessage(roomId, user, message, true)
+                val room = chatService.findRoom(roomId);
+                val chat = ChatMessage(null, room, user, message, true);
+                chatService.outMessage(chat);
             }
             .then(
                 session.receive()
                     .map{ it.payloadAsText }
-                    .doOnNext{ chatService.inMessage(roomId, user, it) }
+                    .doOnNext{
+                        val room = chatService.findRoom(roomId)
+                        val newChat = ChatMessage(null, room, user, it, false);
+
+                        chatService.saveChat(newChat)
+                            .doOnSuccess { chat -> chatService.inMessage(chat) }
+                            .subscribe();
+                    }
                     .doOnComplete{ session.close() }
                     .then()
             )

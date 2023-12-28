@@ -9,6 +9,7 @@ import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.time.Instant
 
 @Component
 class RecentChatHandler(
@@ -24,6 +25,13 @@ class RecentChatHandler(
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
         val json = objectMapper.writeValueAsString(chatMessage)
         val roomId = chatMessage.room.roomId
+
+        // 도배 금지 로직
+        val now = Instant.now();
+        redisService.range(roomId, 0, _maxLen, ChatMessage::class.java)
+            .filter{ it.sendDate.minusSeconds(30) < now &&
+                     it.sender.userId == chatMessage.sender.userId }
+            // 이 갯수가 전체 사용자의 몇 퍼센트인지 판단
 
         redisService.leftPush(roomId, json)
             .filter{ currentLength -> currentLength > _maxLen }

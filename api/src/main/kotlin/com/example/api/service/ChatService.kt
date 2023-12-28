@@ -6,10 +6,12 @@ import com.example.message.config.properties.MessageProperties
 import com.example.domain.model.ChatMessage
 import org.springframework.stereotype.Service
 import com.example.message.publisher.Publisher
+import com.example.persistence.repository.chat.command.ChatMessageCommand
 import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.time.Instant
 
 @Service
@@ -17,7 +19,8 @@ class ChatService(
     private val publisher: Publisher,
     private val messageProps: MessageProperties,
     private val redisService: RedisService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val chatMessageCommand: ChatMessageCommand
 ) {
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
     private val IN_MESSAGE = messageProps.kafka.topics.inMessage
@@ -29,17 +32,15 @@ class ChatService(
         return user;
     }
 
-    fun inMessage(roomId: String, sender: ChatUser, message: String, valid: Boolean = false){
-        val room = rooms[roomId] ?: throw Exception("room can not be empty")
-        val chat = ChatMessage(room, sender, message, valid);
-
+    fun inMessage(chat: ChatMessage){
         publisher.publish(IN_MESSAGE, objectMapper.writeValueAsString(chat))
     }
 
-    fun outMessage(roomId: String, sender: ChatUser, message: String, valid: Boolean = false){
-        val room = rooms[roomId] ?: throw Exception("room can not be empty")
-        val chat = ChatMessage(room, sender, message, valid);
+    fun saveChat(chat : ChatMessage): Mono<ChatMessage> {
+        return chatMessageCommand.save(chat);
+    }
 
+    fun outMessage(chat: ChatMessage){
         publisher.publish(OUT_MESSAGE, objectMapper.writeValueAsString(chat))
     }
 
@@ -55,4 +56,7 @@ class ChatService(
             .doOnError{println(it.message)}
     }
 
+    fun findRoom(roomId: String): ChatRoom {
+        return rooms[roomId] ?: throw Exception("room can not be empty");
+    }
 }

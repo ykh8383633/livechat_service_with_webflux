@@ -19,25 +19,6 @@ class MongoConfig(
 ): AbstractReactiveMongoConfiguration()
 {
 
-//    @Bean
-//    fun mongoClient(
-//        @Value("\${spring.data.mongodb.host}") host: String,
-//        @Value("\${spring.data.mongodb.port}") port: Int
-//    ): MongoClient{
-//        return MongoClients.create("mongodb://$host:$port");
-//    }
-
-//    @Bean
-//    fun mongoClientFactory(
-//        @Value("\${spring.data.mongodb.host}") host: String,
-//        @Value("\${spring.data.mongodb.port}") port: Int
-//    ): MongoClientFactoryBean{
-//        val factory = MongoClientFactoryBean()
-//        factory.setHost(host)
-//        factory.setPort(port)
-//        return factory
-//    }
-
     override fun configureClientSettings(builder: MongoClientSettings.Builder){
         builder.applyConnectionString(ConnectionString("mongodb://$host:$port"))
     }

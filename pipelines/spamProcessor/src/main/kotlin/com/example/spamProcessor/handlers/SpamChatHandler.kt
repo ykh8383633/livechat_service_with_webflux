@@ -15,16 +15,15 @@ class SpamChatHandler(
     private val objectMapper: ObjectMapper,
     override val subscribedChannel: InMessageChannel,
     private val pubChannel: DoneSpamProcessChannel,
-    private val chatMessageCommand: ChatMessageCommand
+    private val chatMessageCommand: ChatMessageCommand,
 ): MessageHandler {
     override fun handle(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
 
         if(checkMessage(chatMessage)){
             chatMessage.valid = true;
+            chatMessageCommand.update(chatMessage).subscribe();
         }
-
-        chatMessageCommand.save(chatMessage)
 
         val json = objectMapper.writeValueAsString(chatMessage)
         publisher.publish(pubChannel.channelName, json);
