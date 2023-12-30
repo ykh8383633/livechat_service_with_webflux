@@ -5,10 +5,12 @@ import com.example.message.channel.OutMessageChannel
 import com.example.domain.model.ChatMessage
 import com.example.message.publisher.Publisher
 import com.example.message.subscriber.handler.MessageHandler
+import com.example.persistence.repository.chat.command.ChatMessageCommand
 import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 import java.time.Instant
 
 @Component
@@ -18,26 +20,41 @@ class RecentChatHandler(
     private val redisService: RedisService,
     override val subscribedChannel: DoneSpamProcessChannel,
     private val pubChannel: OutMessageChannel,
+    private val chatMessageCommand: ChatMessageCommand,
     @Value("\${maxRecentChat}") private val _maxLen: Long
 ): MessageHandler {
 
     override fun handle(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
-        val json = objectMapper.writeValueAsString(chatMessage)
+
+        if(chatMessage.valid != true){
+            publisher.publish(pubChannel.channelName, objectMapper.writeValueAsString(chatMessage));
+            return;
+        }
+
         val roomId = chatMessage.room.roomId
 
         // 도배 금지 로직
-        val now = Instant.now();
         redisService.range(roomId, 0, _maxLen, ChatMessage::class.java)
-            .filter{ it.sendDate.minusSeconds(30) < now &&
-                     it.sender.userId == chatMessage.sender.userId }
-            // 이 갯수가 전체 사용자의 몇 퍼센트인지 판단
-
-        redisService.leftPush(roomId, json)
+            .filter{ Instant.now().minusSeconds(30) < it.sendDate &&
+                    it.sender.userId == chatMessage.sender.userId }
+            .count()
+            .log()
+            .filter{ !isTooMuchChatter(it) }
+            .switchIfEmpty(Mono.defer{
+                chatMessage.valid = false
+                chatMessageCommand.save(chatMessage)
+                Mono.empty<Long>()
+            })
+            .flatMap { redisService.leftPush(roomId, objectMapper.writeValueAsString(chatMessage)) }
+            .log()
             .filter{ currentLength -> currentLength > _maxLen }
             .flatMap { redisService.trimLeft(roomId, _maxLen) }
+            .doOnTerminate { publisher.publish(pubChannel.channelName, objectMapper.writeValueAsString(chatMessage)) }
             .subscribe()
 
-        publisher.publish(pubChannel.channelName, json);
+
     }
+
+    private fun isTooMuchChatter(recentChatCount: Long) = recentChatCount > 3;
 }
