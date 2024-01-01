@@ -3,7 +3,7 @@ spring:
     name: webfluxPractice_recentChatProcessor
 
   profiles:
-    include: kafka, redis
+    include: kafka, redis, mongo
 
   lifecycle:
     timeout-per-shutdown-phase: 1m

@@ -16,6 +16,7 @@ class RedisServiceImpl(
     private val valueOps = redisTemplate.opsForValue();
     private val listOps = redisTemplate.opsForList()
 
+    // region [ValueOps]
     override fun <TValue> set(key: String, value: TValue): Mono<Boolean> {
         val json = objectMapper.writeValueAsString(value);
         return set(key, json);
@@ -24,6 +25,25 @@ class RedisServiceImpl(
         return valueOps.set(key, value);
     }
 
+    override fun<TValue> get(key: String, clazz: Class<TValue>): Mono<TValue> {
+        return get(key).map {objectMapper.readValue(it, clazz)}
+    }
+
+    override fun get(key: String): Mono<String>{
+        return valueOps.get(key)
+    }
+
+    override fun incr(key: String): Mono<Long> {
+        return incrBy(key, 1);
+    }
+
+    override fun incrBy(key: String, delta: Long): Mono<Long> {
+        return valueOps.increment(key, delta)
+    }
+
+    // endregion
+
+    //region [ListOps]
     override fun <TValue> leftPush(key: String, value: TValue): Mono<Long>{
         val json = objectMapper.writeValueAsString(value)
         return leftPush(key, json)
@@ -61,4 +81,5 @@ class RedisServiceImpl(
         return listOps.range(key, start, end);
     }
 
+    //endregion
 }

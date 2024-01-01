@@ -1,5 +1,6 @@
 package com.example.api.service
 
+import com.example.domain.enums.RedisKey
 import com.example.domain.model.ChatRoom
 import com.example.domain.model.ChatUser
 import com.example.message.config.properties.MessageProperties
@@ -17,10 +18,10 @@ import java.time.Instant
 @Service
 class ChatService(
     private val publisher: Publisher,
-    private val messageProps: MessageProperties,
     private val redisService: RedisService,
     private val objectMapper: ObjectMapper,
-    private val chatMessageCommand: ChatMessageCommand
+    private val chatMessageCommand: ChatMessageCommand,
+    messageProps: MessageProperties,
 ) {
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
     private val IN_MESSAGE = messageProps.kafka.topics.inMessage
@@ -29,7 +30,19 @@ class ChatService(
     fun registerUser(roomId: String, userId: String, session: WebSocketSession): ChatUser {
         val user = ChatUser(session, userId)
         rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
+        increaseUserCount(roomId).subscribe()
+
         return user;
+    }
+
+    fun increaseUserCount(roomId: String): Mono<Long>{
+        val key = RedisKey.USER_COUNT.createKey(roomId);
+        return redisService.incr(key)
+    }
+
+    fun getUserCount(roomId: String): Mono<Long> {
+        val key = RedisKey.USER_COUNT.createKey(roomId);
+        return redisService.get(key).map{it.toLong()}
     }
 
     fun inMessage(chat: ChatMessage){
@@ -51,7 +64,8 @@ class ChatService(
     }
 
     fun getRecentChat(roomId: String): Flux<ChatMessage> {
-        return redisService.getAll<ChatMessage>(roomId, ChatMessage::class.java)
+        val key = RedisKey.RECENT_CHAT.createKey(roomId);
+        return redisService.getAll<ChatMessage>(key, ChatMessage::class.java)
             .sort{c1, c2 -> c1.sendDate.compareTo(c2.sendDate)}
             .doOnError{println(it.message)}
     }
@@ -59,4 +73,5 @@ class ChatService(
     fun findRoom(roomId: String): ChatRoom {
         return rooms[roomId] ?: throw Exception("room can not be empty");
     }
+
 }

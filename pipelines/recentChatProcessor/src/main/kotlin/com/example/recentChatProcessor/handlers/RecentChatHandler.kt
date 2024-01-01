@@ -1,5 +1,6 @@
 package com.example.recentChatProcessor.handlers
 
+import com.example.domain.enums.RedisKey
 import com.example.message.channel.DoneSpamProcessChannel
 import com.example.message.channel.OutMessageChannel
 import com.example.domain.model.ChatMessage
@@ -33,27 +34,23 @@ class RecentChatHandler(
         }
 
         val roomId = chatMessage.room.roomId
+        val redisKey = RedisKey.RECENT_CHAT.createKey(roomId);
 
-        // 도배 금지 로직
-        redisService.range(roomId, 0, _maxLen, ChatMessage::class.java)
+        redisService.range(redisKey, 0, _maxLen, ChatMessage::class.java)
             .filter{ Instant.now().minusSeconds(30) < it.sendDate &&
                     it.sender.userId == chatMessage.sender.userId }
             .count()
-            .log()
             .filter{ !isTooMuchChatter(it) }
             .switchIfEmpty(Mono.defer{
                 chatMessage.valid = false
                 chatMessageCommand.save(chatMessage)
                 Mono.empty<Long>()
             })
-            .flatMap { redisService.leftPush(roomId, objectMapper.writeValueAsString(chatMessage)) }
-            .log()
+            .flatMap { redisService.leftPush(redisKey, objectMapper.writeValueAsString(chatMessage)) }
             .filter{ currentLength -> currentLength > _maxLen }
-            .flatMap { redisService.trimLeft(roomId, _maxLen) }
+            .flatMap { redisService.trimLeft(redisKey, _maxLen) }
             .doOnTerminate { publisher.publish(pubChannel.channelName, objectMapper.writeValueAsString(chatMessage)) }
             .subscribe()
-
-
     }
 
     private fun isTooMuchChatter(recentChatCount: Long) = recentChatCount > 3;
