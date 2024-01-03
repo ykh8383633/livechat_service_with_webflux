@@ -35,6 +35,18 @@ class ChatService(
         return user;
     }
 
+    fun onClose(roomId: String, user: ChatUser, session: WebSocketSession){
+        val room = findRoom(roomId);
+        if(room.findUser(user.userId) != null){
+            room.deleteUser(user.userId);
+
+            val key = RedisKey.USER_COUNT.createKey(roomId);
+            redisService.decr(key).subscribe();
+        }
+
+        session.close()
+    }
+
     fun increaseUserCount(roomId: String): Mono<Long>{
         val key = RedisKey.USER_COUNT.createKey(roomId);
         return redisService.incr(key)
@@ -73,5 +85,6 @@ class ChatService(
     fun findRoom(roomId: String): ChatRoom {
         return rooms[roomId] ?: throw Exception("room can not be empty");
     }
+
 
 }

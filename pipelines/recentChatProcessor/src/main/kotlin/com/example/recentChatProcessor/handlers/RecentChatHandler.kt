@@ -4,6 +4,7 @@ import com.example.domain.enums.RedisKey
 import com.example.message.channel.DoneSpamProcessChannel
 import com.example.message.channel.OutMessageChannel
 import com.example.domain.model.ChatMessage
+import com.example.message.channel.DoneRecentChatProcess
 import com.example.message.publisher.Publisher
 import com.example.message.subscriber.handler.MessageHandler
 import com.example.persistence.repository.chat.command.ChatMessageCommand
@@ -20,7 +21,7 @@ class RecentChatHandler(
     private val objectMapper: ObjectMapper,
     private val redisService: RedisService,
     override val subscribedChannel: DoneSpamProcessChannel,
-    private val pubChannel: OutMessageChannel,
+    private val pubChannel: DoneRecentChatProcess,
     private val chatMessageCommand: ChatMessageCommand,
     @Value("\${maxRecentChat}") private val _maxLen: Long
 ): MessageHandler {
@@ -36,15 +37,12 @@ class RecentChatHandler(
         val roomId = chatMessage.room.roomId
         val redisKey = RedisKey.RECENT_CHAT.createKey(roomId);
 
-        redisService.range(redisKey, 0, _maxLen, ChatMessage::class.java)
-            .filter{ Instant.now().minusSeconds(30) < it.sendDate &&
-                    it.sender.userId == chatMessage.sender.userId }
-            .count()
-            .filter{ !isTooMuchChatter(it) }
+        isTooMuchChatter(chatMessage)
+            .filter{ it == false}  // 채팅 도배가 아닌 경우만 최근 목록(redis)에 저장
             .switchIfEmpty(Mono.defer{
                 chatMessage.valid = false
                 chatMessageCommand.save(chatMessage)
-                Mono.empty<Long>()
+                Mono.empty<Boolean>()
             })
             .flatMap { redisService.leftPush(redisKey, objectMapper.writeValueAsString(chatMessage)) }
             .filter{ currentLength -> currentLength > _maxLen }
@@ -53,5 +51,14 @@ class RecentChatHandler(
             .subscribe()
     }
 
-    private fun isTooMuchChatter(recentChatCount: Long) = recentChatCount > 3;
+    private fun isTooMuchChatter(chat: ChatMessage): Mono<Boolean>{
+        val key = RedisKey.RECENT_CHAT.createKey(chat.room.roomId)
+        return redisService.range(key, 0, _maxLen, ChatMessage::class.java)
+            .filter {Instant.now().minusSeconds(30) < it.sendDate &&
+                    it.sender.userId == chat.sender.userId }
+            .count()
+            .map{ userChatCount ->
+                !chat.room.allowTooMuchChatter && (userChatCount.toDouble() / _maxLen)* 100 > 20
+            }
+    }
 }

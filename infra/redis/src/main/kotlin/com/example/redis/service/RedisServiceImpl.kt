@@ -41,6 +41,14 @@ class RedisServiceImpl(
         return valueOps.increment(key, delta)
     }
 
+    override fun decr(key: String): Mono<Long> {
+        return decrBy(key, 1)
+    }
+
+    override fun decrBy(key: String, delta: Long): Mono<Long> {
+        return valueOps.decrement(key, delta)
+    }
+
     // endregion
 
     //region [ListOps]
@@ -78,7 +86,8 @@ class RedisServiceImpl(
     }
 
     override fun range(key: String, start: Long, end: Long): Flux<String>{
-        return listOps.range(key, start, end);
+        return listOps.range(key, start, end)
+            .log()
     }
 
     //endregion

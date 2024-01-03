@@ -16,6 +16,7 @@
         <module name="liveChat.pipelines.recentChatProcessor.main" />
         <module name="liveChat.infra.persistence.main" />
         <module name="liveChat.pipelines.spamProcessor.main" />
+        <module name="liveChat.pipelines.saveChatProcessor.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

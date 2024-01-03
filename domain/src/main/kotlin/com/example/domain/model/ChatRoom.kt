@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 //@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.ANY)
 class ChatRoom (val roomId: String){
     @JsonIgnore private val users = mutableSetOf<ChatUser>()
+    val allowTooMuchChatter = false;
 
     fun registerUser(user: ChatUser){
+        if(findUser(user.userId) != null){
+            throw Exception("INVALID_USER_ID")
+        }
         users.add(user)
     }
 
@@ -19,4 +23,7 @@ class ChatRoom (val roomId: String){
         return users.find{user -> user.userId == userId}
     }
 
+    fun deleteUser(userId: String): Boolean{
+        return users.removeIf { it.userId == userId }
+    }
 }

@@ -10,6 +10,8 @@ interface RedisService {
     fun get(key: String): Mono<String>
     fun incr(key: String): Mono<Long>
     fun incrBy(key: String, delta: Long): Mono<Long>
+    fun decr(key: String): Mono<Long>
+    fun decrBy(key: String, delta: Long): Mono<Long>
     fun <TValue> leftPush(key: String, value: TValue): Mono<Long>
     fun leftPush(key: String, value: String): Mono<Long>
     fun trimLeft(key: String, index: Long): Mono<Boolean>

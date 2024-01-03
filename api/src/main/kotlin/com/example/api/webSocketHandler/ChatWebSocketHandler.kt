@@ -42,7 +42,7 @@ class ChatWebSocketHandler(
                             .doOnSuccess { chat -> chatService.inMessage(chat) }
                             .subscribe();
                     }
-                    .doOnComplete{ session.close() }
+                    .doOnTerminate{ chatService.onClose(roomId, user, session) }
                     .then()
             )
     }

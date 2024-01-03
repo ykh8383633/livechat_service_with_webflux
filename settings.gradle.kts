@@ -20,3 +20,5 @@ findProject(":pipelines:recentChatProcessor")?.name = "recentChatProcessor"
 include("domain")
 include("infra:persistence")
 findProject(":infra:persistence")?.name = "persistence"
+include("pipelines:saveChatProcessor")
+findProject(":pipelines:saveChatProcessor")?.name = "saveChatProcessor"

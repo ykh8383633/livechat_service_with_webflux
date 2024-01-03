@@ -9,4 +9,5 @@ spring:
       inMessage: in-message
       outMessage: out-message
       doneSpamProcess: done-spam-process
+      doneRecentChatProcess: done-recent-chat-process
 

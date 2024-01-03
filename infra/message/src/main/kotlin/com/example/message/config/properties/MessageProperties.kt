@@ -16,6 +16,7 @@ class MessageProperties(
         val inMessage: String,
         val outMessage: String,
         val doneSpamProcess: String,
+        val doneRecentChatProcess: String,
     )
 
 }
