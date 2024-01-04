@@ -15,6 +15,7 @@ class MessageProperties(
     data class TopicProps(
         val inMessage: String,
         val outMessage: String,
+        val outAlert: String,
         val doneSpamProcess: String,
         val doneRecentChatProcess: String,
     )

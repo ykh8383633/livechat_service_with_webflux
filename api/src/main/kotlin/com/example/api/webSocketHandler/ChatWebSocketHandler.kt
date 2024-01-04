@@ -1,6 +1,8 @@
 package com.example.api.webSocketHandler
 
 import com.example.api.service.ChatService
+import com.example.domain.enums.AlertType
+import com.example.domain.model.Alert
 import com.example.domain.model.ChatMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingle
@@ -28,8 +30,8 @@ class ChatWebSocketHandler(
             .doOnComplete{
                 val message = "${user.userId} 사용자가 입장했습니다."
                 val room = chatService.findRoom(roomId);
-                val chat = ChatMessage(null, room, user, message, true);
-                chatService.outMessage(chat);
+                val chat = Alert(room = room, message = message, toAll = true, type = AlertType.INFO);
+                chatService.outAlert(chat);
             }
             .then(
                 session.receive()
@@ -37,10 +39,7 @@ class ChatWebSocketHandler(
                     .doOnNext{
                         val room = chatService.findRoom(roomId)
                         val newChat = ChatMessage(null, room, user, it, false);
-
-                        chatService.saveChat(newChat)
-                            .doOnSuccess { chat -> chatService.inMessage(chat) }
-                            .subscribe();
+                        chatService.inMessage(newChat);
                     }
                     .doOnTerminate{ chatService.onClose(roomId, user, session) }
                     .then()

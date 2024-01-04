@@ -1,13 +1,13 @@
 package com.example.recentChatProcessor.handlers
 
 import com.example.domain.enums.RedisKey
+import com.example.domain.enums.UserType
 import com.example.message.channel.DoneSpamProcessChannel
-import com.example.message.channel.OutMessageChannel
 import com.example.domain.model.ChatMessage
-import com.example.message.channel.DoneRecentChatProcess
+import com.example.message.channel.DoneRecentChatProcessChannel
+import com.example.message.config.properties.MessageProperties
 import com.example.message.publisher.Publisher
 import com.example.message.subscriber.handler.MessageHandler
-import com.example.persistence.repository.chat.command.ChatMessageCommand
 import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
@@ -21,16 +21,18 @@ class RecentChatHandler(
     private val objectMapper: ObjectMapper,
     private val redisService: RedisService,
     override val subscribedChannel: DoneSpamProcessChannel,
-    private val pubChannel: DoneRecentChatProcess,
-    private val chatMessageCommand: ChatMessageCommand,
-    @Value("\${maxRecentChat}") private val _maxLen: Long
+    @Value("\${maxRecentChat}") private val _maxLen: Long,
+    messageProps: MessageProperties,
 ): MessageHandler {
+    private val DONE_RECENT_CHAT_PROCESS_CHANNEL = messageProps.kafka.topics.doneRecentChatProcess;
+    private val OUT_ALERT = messageProps.kafka.topics.outAlert;
 
     override fun handle(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
+        var channel = DONE_RECENT_CHAT_PROCESS_CHANNEL
 
-        if(chatMessage.valid != true){
-            publisher.publish(pubChannel.channelName, objectMapper.writeValueAsString(chatMessage));
+        if(chatMessage.valid != true || chatMessage.sender.isMuteUser){
+            publisher.publish(channel, objectMapper.writeValueAsString(chatMessage));
             return;
         }
 
@@ -41,13 +43,18 @@ class RecentChatHandler(
             .filter{ it == false}  // 채팅 도배가 아닌 경우만 최근 목록(redis)에 저장
             .switchIfEmpty(Mono.defer{
                 chatMessage.valid = false
-                chatMessageCommand.save(chatMessage)
+
+                chatMessage.sender.type = UserType.BANNED_USER
+                chatMessage.sender.muteStartTime = Instant.now()
+
+                channel = OUT_ALERT
+
                 Mono.empty<Boolean>()
             })
             .flatMap { redisService.leftPush(redisKey, objectMapper.writeValueAsString(chatMessage)) }
             .filter{ currentLength -> currentLength > _maxLen }
             .flatMap { redisService.trimLeft(redisKey, _maxLen) }
-            .doOnTerminate { publisher.publish(pubChannel.channelName, objectMapper.writeValueAsString(chatMessage)) }
+            .doOnTerminate { publisher.publish(channel, objectMapper.writeValueAsString(chatMessage)) } // 수정 필요
             .subscribe()
     }
 

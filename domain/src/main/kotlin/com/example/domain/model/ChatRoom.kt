@@ -14,6 +14,15 @@ class ChatRoom (val roomId: String){
         users.add(user)
     }
 
+    fun alertToAll(alertContent: String){
+        users.forEach{user -> user.sendMessage(null, alertContent)}
+    }
+
+    fun alertToTarget(target: MutableList<ChatUser>, alertContent: String){
+        users.filter{user -> target.find{t -> t.userId == user.userId} != null}
+            .forEach{user -> user.sendMessage(null, alertContent)}
+    }
+
     fun broadCast(senderId: String, message: String){
         val sender = findUser(senderId) ?: return;
         users.forEach{user -> user.sendMessage(sender, message)}

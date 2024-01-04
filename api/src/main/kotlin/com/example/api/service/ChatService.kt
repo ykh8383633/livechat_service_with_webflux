@@ -1,6 +1,7 @@
 package com.example.api.service
 
 import com.example.domain.enums.RedisKey
+import com.example.domain.model.Alert
 import com.example.domain.model.ChatRoom
 import com.example.domain.model.ChatUser
 import com.example.message.config.properties.MessageProperties
@@ -25,6 +26,7 @@ class ChatService(
 ) {
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
     private val IN_MESSAGE = messageProps.kafka.topics.inMessage
+    private val OUT_ALERT = messageProps.kafka.topics.outAlert
     private val rooms = mutableMapOf<String, ChatRoom>()
 
     fun registerUser(roomId: String, userId: String, session: WebSocketSession): ChatUser {
@@ -67,6 +69,21 @@ class ChatService(
 
     fun outMessage(chat: ChatMessage){
         publisher.publish(OUT_MESSAGE, objectMapper.writeValueAsString(chat))
+    }
+
+    fun outAlert(alert: Alert){
+        publisher.publish(OUT_ALERT, objectMapper.writeValueAsString(alert))
+    }
+
+    fun alertToRoom(alert: Alert){
+        val room = findRoom(alert.room?.roomId ?: throw Exception("room can not be null"))
+        val alertContent = objectMapper.writeValueAsString(alert);
+        if(alert.toAll){
+            room.alertToAll(alertContent)
+            return;
+        }
+
+        room.alertToTarget(alert.targetUser, alertContent)
     }
 
     fun broadcastToRoom(chat: ChatMessage){

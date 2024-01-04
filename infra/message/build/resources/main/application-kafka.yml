@@ -8,5 +8,7 @@ spring:
     topics:
       inMessage: in-message
       outMessage: out-message
+      outAlert: out-alert
       doneSpamProcess: done-spam-process
+      doneRecentChatProcess: done-recent-chat-process
 
