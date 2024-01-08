@@ -6,7 +6,7 @@ import com.example.message.channel.OutMessageChannel
 import com.example.message.publisher.Publisher
 import org.springframework.beans.factory.annotation.Autowired
 
-abstract class ChatProcessorMessageHandler: MessageHandler {
+abstract class AbstractChatProcessPipeBase: MessageHandler {
     private var _subscribedChannel: Channel? = null;
     private var _publishChannel: Channel? = null;
 

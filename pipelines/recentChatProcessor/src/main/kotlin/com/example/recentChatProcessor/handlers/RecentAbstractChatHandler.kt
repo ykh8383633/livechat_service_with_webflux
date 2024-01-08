@@ -3,16 +3,12 @@ package com.example.recentChatProcessor.handlers
 import com.example.domain.enums.RedisKey
 import com.example.domain.enums.UserType
 import com.example.domain.model.Alert
-import com.example.message.channel.DoneSpamProcessChannel
 import com.example.domain.model.ChatMessage
 import com.example.domain.model.ChatRoom
 import com.example.domain.model.ChatUser
-import com.example.message.channel.Channel
-import com.example.message.channel.DoneRecentChatProcessChannel
 import com.example.message.config.properties.MessageProperties
 import com.example.message.publisher.Publisher
-import com.example.message.subscriber.handler.ChatProcessorMessageHandler
-import com.example.message.subscriber.handler.MessageHandler
+import com.example.message.subscriber.handler.AbstractChatProcessPipeBase
 import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +17,7 @@ import reactor.core.publisher.Mono
 import java.time.Instant
 
 @Component
-class RecentChatHandler(
+class RecentAbstractChatHandler(
     override val publisher: Publisher,
     private val objectMapper: ObjectMapper,
     private val redisService: RedisService,
@@ -29,7 +25,7 @@ class RecentChatHandler(
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
     @Value("\${maxRecentChat}") private val _maxLen: Long,
     messageProps: MessageProperties,
-): ChatProcessorMessageHandler() {
+): AbstractChatProcessPipeBase() {
     private val OUT_ALERT = messageProps.kafka.topics.outAlert;
 
     override fun handle(message: String) {
