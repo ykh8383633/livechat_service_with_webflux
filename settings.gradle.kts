@@ -22,3 +22,5 @@ include("infra:persistence")
 findProject(":infra:persistence")?.name = "persistence"
 include("pipelines:saveChatProcessor")
 findProject(":pipelines:saveChatProcessor")?.name = "saveChatProcessor"
+include("pipelines:defaultValidationProcessor")
+findProject(":pipelines:defaultValidationProcessor")?.name = "defaultValidationProcessor"

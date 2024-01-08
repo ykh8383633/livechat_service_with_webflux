@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/infra/persistence" />
             <option value="$PROJECT_DIR$/infra/redis" />
             <option value="$PROJECT_DIR$/pipelines" />
+            <option value="$PROJECT_DIR$/pipelines/defaultValidationProcessor" />
             <option value="$PROJECT_DIR$/pipelines/recentChatProcessor" />
             <option value="$PROJECT_DIR$/pipelines/saveChatProcessor" />
             <option value="$PROJECT_DIR$/pipelines/spamProcessor" />

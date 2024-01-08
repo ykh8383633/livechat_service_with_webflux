@@ -11,4 +11,8 @@ spring:
       outAlert: out-alert
       doneSpamProcess: done-spam-process
       doneRecentChatProcess: done-recent-chat-process
+      step1: chatProcess-step1
+      step2: chatProcess-step2
+      step3: chatProcess-step3
+      step4: chatProcess-step4
 

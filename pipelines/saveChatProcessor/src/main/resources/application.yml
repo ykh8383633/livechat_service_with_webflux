@@ -1,6 +1,6 @@
 spring:
   application:
-    name: webfluxPractice
+    name: saveChatProcessor
 
   profiles:
     include: kafka, mongo
@@ -10,6 +10,11 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
     default-property-inclusion: NON_NULL
+
+  chat:
+    processor:
+      step: 4
+      lastStep: 4
 
 server:
   port: 8084

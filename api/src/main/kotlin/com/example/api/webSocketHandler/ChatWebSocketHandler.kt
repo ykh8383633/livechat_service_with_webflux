@@ -4,6 +4,7 @@ import com.example.api.service.ChatService
 import com.example.domain.enums.AlertType
 import com.example.domain.model.Alert
 import com.example.domain.model.ChatMessage
+import com.example.domain.model.ChatUser
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import reactor.kotlin.core.publisher.toMono
 import java.net.URI
 import java.net.URLDecoder
@@ -23,15 +25,19 @@ class ChatWebSocketHandler(
         val url = session.handshakeInfo.uri;
         val roomId = getRoomId(url)
         val userId = getUserId(url)
-        val user = chatService.registerUser(roomId, userId, session)
+        lateinit var user : ChatUser
 
-        return chatService.getRecentChat(roomId)
-            .map{ user.sendMessage(it.sender, objectMapper.writeValueAsString(it)) }
+        return chatService.registerUser(roomId, userId, session).toFlux()
+            .flatMap{
+                user = it
+                chatService.getRecentChat(roomId)
+            }
+            .map{ chat -> user.sendMessage(chat.sender, objectMapper.writeValueAsString(chat)) }
             .doOnComplete{
                 val message = "${user.userId} 사용자가 입장했습니다."
                 val room = chatService.findRoom(roomId);
-                val chat = Alert(room = room, message = message, toAll = true, type = AlertType.INFO);
-                chatService.outAlert(chat);
+                val alert = Alert(room = room, message = message, toAll = true, type = AlertType.INFORMATION);
+                chatService.outAlert(alert);
             }
             .then(
                 session.receive()
@@ -44,6 +50,26 @@ class ChatWebSocketHandler(
                     .doOnTerminate{ chatService.onClose(roomId, user, session) }
                     .then()
             )
+
+//        return chatService.getRecentChat(roomId)
+//            .map{ user.sendMessage(it.sender, objectMapper.writeValueAsString(it)) }
+//            .doOnComplete{
+//                val message = "${user.userId} 사용자가 입장했습니다."
+//                val room = chatService.findRoom(roomId);
+//                val chat = Alert(room = room, message = message, toAll = true, type = AlertType.INFORMATION);
+//                chatService.outAlert(chat);
+//            }
+//            .then(
+//                session.receive()
+//                    .map{ it.payloadAsText }
+//                    .doOnNext{
+//                        val room = chatService.findRoom(roomId)
+//                        val newChat = ChatMessage(null, room, user, it, false);
+//                        chatService.inMessage(newChat);
+//                    }
+//                    .doOnTerminate{ chatService.onClose(roomId, user, session) }
+//                    .then()
+//            )
     }
 
     private fun getRoomId(url: URI): String {

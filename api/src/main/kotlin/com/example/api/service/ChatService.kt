@@ -8,7 +8,8 @@ import com.example.message.config.properties.MessageProperties
 import com.example.domain.model.ChatMessage
 import org.springframework.stereotype.Service
 import com.example.message.publisher.Publisher
-import com.example.persistence.repository.chat.command.ChatMessageCommand
+import com.example.persistence.repository.user.command.ChatUserCommand
+import com.example.persistence.repository.user.query.ChatUserQuery
 import com.example.redis.service.RedisService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -21,7 +22,8 @@ class ChatService(
     private val publisher: Publisher,
     private val redisService: RedisService,
     private val objectMapper: ObjectMapper,
-    private val chatMessageCommand: ChatMessageCommand,
+    private val userCommand: ChatUserCommand,
+    private val userQuery: ChatUserQuery,
     messageProps: MessageProperties,
 ) {
     private val OUT_MESSAGE = messageProps.kafka.topics.outMessage
@@ -29,12 +31,23 @@ class ChatService(
     private val OUT_ALERT = messageProps.kafka.topics.outAlert
     private val rooms = mutableMapOf<String, ChatRoom>()
 
-    fun registerUser(roomId: String, userId: String, session: WebSocketSession): ChatUser {
-        val user = ChatUser(session, userId)
-        rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
-        increaseUserCount(roomId).subscribe()
+    fun registerUser(roomId: String, userId: String, session: WebSocketSession): Mono<ChatUser> {
+        return userQuery.findById(userId)
+            .switchIfEmpty(Mono.defer{ userCommand.save(ChatUser(userId = userId)) })
+            .map{user ->
+                user.session = session;
+                rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
 
-        return user;
+                user
+            }
+            .doOnNext{increaseUserCount(roomId)}
+
+
+//        val user = ChatUser(session, userId)
+//        rooms.getOrPut(roomId) { ChatRoom(roomId) }.registerUser(user)
+//        increaseUserCount(roomId).subscribe()
+//
+//        return user;
     }
 
     fun onClose(roomId: String, user: ChatUser, session: WebSocketSession){
@@ -61,10 +74,6 @@ class ChatService(
 
     fun inMessage(chat: ChatMessage){
         publisher.publish(IN_MESSAGE, objectMapper.writeValueAsString(chat))
-    }
-
-    fun saveChat(chat : ChatMessage): Mono<ChatMessage> {
-        return chatMessageCommand.save(chat);
     }
 
     fun outMessage(chat: ChatMessage){

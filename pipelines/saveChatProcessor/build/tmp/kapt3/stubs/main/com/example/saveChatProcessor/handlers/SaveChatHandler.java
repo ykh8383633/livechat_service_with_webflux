@@ -1,32 +1,49 @@
 package com.example.saveChatProcessor.handlers;
 
 @org.springframework.stereotype.Component
-@kotlin.Metadata(mv = {1, 8, 0}, k = 1, xi = 48, d1 = {"\u00006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\b\u0017\u0018\u00002\u00020\u0001B-\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\u0006\u0010\b\u001a\u00020\t\u0012\u0006\u0010\n\u001a\u00020\u000b\u00a2\u0006\u0002\u0010\fJ\u0010\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\u0012H\u0016R\u000e\u0010\n\u001a\u00020\u000bX\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0004\u001a\u00020\u0005X\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\b\u001a\u00020\tX\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0002\u001a\u00020\u0003X\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0006\u001a\u00020\u0007X\u0096\u0004\u00a2\u0006\b\n\u0000\u001a\u0004\b\r\u0010\u000e\u00a8\u0006\u0013"}, d2 = {"Lcom/example/saveChatProcessor/handlers/SaveChatHandler;", "Lcom/example/message/subscriber/handler/MessageHandler;", "publisher", "Lcom/example/message/publisher/Publisher;", "objectMapper", "Lcom/fasterxml/jackson/databind/ObjectMapper;", "subscribedChannel", "Lcom/example/message/channel/DoneRecentChatProcessChannel;", "pubChannel", "Lcom/example/message/channel/OutMessageChannel;", "chatMessageCommand", "Lcom/example/persistence/repository/chat/command/ChatMessageCommand;", "(Lcom/example/message/publisher/Publisher;Lcom/fasterxml/jackson/databind/ObjectMapper;Lcom/example/message/channel/DoneRecentChatProcessChannel;Lcom/example/message/channel/OutMessageChannel;Lcom/example/persistence/repository/chat/command/ChatMessageCommand;)V", "getSubscribedChannel", "()Lcom/example/message/channel/DoneRecentChatProcessChannel;", "handle", "", "message", "", "saveChatProcessor"})
-public class SaveChatHandler implements com.example.message.subscriber.handler.MessageHandler {
+@kotlin.Metadata(mv = {1, 8, 0}, k = 1, xi = 48, d1 = {"\u0000:\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010!\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\n\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\u000e\n\u0000\b\u0017\u0018\u00002\u00020\u0001B?\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\f\u0010\b\u001a\b\u0012\u0004\u0012\u00020\n0\t\u0012\b\b\u0001\u0010\u000b\u001a\u00020\f\u0012\b\b\u0001\u0010\r\u001a\u00020\f\u00a2\u0006\u0002\u0010\u000eJ\u0010\u0010\u0016\u001a\u00020\u00172\u0006\u0010\u0018\u001a\u00020\u0019H\u0016R\u001a\u0010\b\u001a\b\u0012\u0004\u0012\u00020\n0\tX\u0094\u0004\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000f\u0010\u0010R\u000e\u0010\u0006\u001a\u00020\u0007X\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\r\u001a\u00020\fX\u0094\u0004\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0011\u0010\u0012R\u000e\u0010\u0004\u001a\u00020\u0005X\u0092\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\u00020\fX\u0094\u0004\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0013\u0010\u0012R\u0014\u0010\u0002\u001a\u00020\u0003X\u0094\u0004\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0014\u0010\u0015\u00a8\u0006\u001a"}, d2 = {"Lcom/example/saveChatProcessor/handlers/SaveChatHandler;", "Lcom/example/message/subscriber/handler/ChatProcessorMessageHandler;", "publisher", "Lcom/example/message/publisher/Publisher;", "objectMapper", "Lcom/fasterxml/jackson/databind/ObjectMapper;", "chatMessageCommand", "Lcom/example/persistence/repository/chat/command/ChatMessageCommand;", "allChannels", "", "Lcom/example/message/channel/Channel;", "processStep", "", "lastStep", "(Lcom/example/message/publisher/Publisher;Lcom/fasterxml/jackson/databind/ObjectMapper;Lcom/example/persistence/repository/chat/command/ChatMessageCommand;Ljava/util/List;II)V", "getAllChannels", "()Ljava/util/List;", "getLastStep", "()I", "getProcessStep", "getPublisher", "()Lcom/example/message/publisher/Publisher;", "handle", "", "message", "", "saveChatProcessor"})
+public class SaveChatHandler extends com.example.message.subscriber.handler.ChatProcessorMessageHandler {
     @org.jetbrains.annotations.NotNull
     private final com.example.message.publisher.Publisher publisher = null;
     @org.jetbrains.annotations.NotNull
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = null;
     @org.jetbrains.annotations.NotNull
-    private final com.example.message.channel.DoneRecentChatProcessChannel subscribedChannel = null;
-    @org.jetbrains.annotations.NotNull
-    private final com.example.message.channel.OutMessageChannel pubChannel = null;
-    @org.jetbrains.annotations.NotNull
     private final com.example.persistence.repository.chat.command.ChatMessageCommand chatMessageCommand = null;
+    @org.jetbrains.annotations.NotNull
+    private final java.util.List<com.example.message.channel.Channel> allChannels = null;
+    private final int processStep = 0;
+    private final int lastStep = 0;
     
     public SaveChatHandler(@org.jetbrains.annotations.NotNull
     com.example.message.publisher.Publisher publisher, @org.jetbrains.annotations.NotNull
     com.fasterxml.jackson.databind.ObjectMapper objectMapper, @org.jetbrains.annotations.NotNull
-    com.example.message.channel.DoneRecentChatProcessChannel subscribedChannel, @org.jetbrains.annotations.NotNull
-    com.example.message.channel.OutMessageChannel pubChannel, @org.jetbrains.annotations.NotNull
-    com.example.persistence.repository.chat.command.ChatMessageCommand chatMessageCommand) {
+    com.example.persistence.repository.chat.command.ChatMessageCommand chatMessageCommand, @org.jetbrains.annotations.NotNull
+    java.util.List<com.example.message.channel.Channel> allChannels, @org.springframework.beans.factory.annotation.Value(value = "${spring.chat.processor.step}")
+    int processStep, @org.springframework.beans.factory.annotation.Value(value = "${spring.chat.processor.lastStep}")
+    int lastStep) {
         super();
     }
     
     @java.lang.Override
     @org.jetbrains.annotations.NotNull
-    public com.example.message.channel.DoneRecentChatProcessChannel getSubscribedChannel() {
+    protected com.example.message.publisher.Publisher getPublisher() {
         return null;
+    }
+    
+    @java.lang.Override
+    @org.jetbrains.annotations.NotNull
+    protected java.util.List<com.example.message.channel.Channel> getAllChannels() {
+        return null;
+    }
+    
+    @java.lang.Override
+    protected int getProcessStep() {
+        return 0;
+    }
+    
+    @java.lang.Override
+    protected int getLastStep() {
+        return 0;
     }
     
     @java.lang.Override

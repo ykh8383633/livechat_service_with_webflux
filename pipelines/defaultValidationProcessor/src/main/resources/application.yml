@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: defaultValidationProcessor
+
+  profiles:
+    include: kafka, mongo
+
+  lifecycle:
+    timeout-per-shutdown-phase: 1m
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: NON_NULL
+
+  chat:
+    processor:
+      step: 1
+      lastStep: 4
+
+server:
+  port: 8085
+  shutdown: graceful
+
+logging:
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
+

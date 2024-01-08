@@ -1,6 +1,6 @@
 spring:
   application:
-    name: webfluxPractice_recentChatProcessor
+    name: recentChatProcessor
 
   profiles:
     include: kafka, redis, mongo
@@ -10,6 +10,11 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
     default-property-inclusion: NON_NULL
+
+  chat:
+    processor:
+      step: 3
+      lastStep: 4
 
 maxRecentChat: 5
 

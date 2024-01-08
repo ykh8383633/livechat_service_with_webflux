@@ -18,6 +18,10 @@ class MessageProperties(
         val outAlert: String,
         val doneSpamProcess: String,
         val doneRecentChatProcess: String,
+        val step1: String,
+        val step2: String,
+        val step3: String,
+        val step4: String,
     )
 
 }

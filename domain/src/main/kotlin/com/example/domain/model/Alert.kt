@@ -7,7 +7,7 @@ class Alert(
     var room: ChatRoom? = null,
     var toAll: Boolean = true,
     var targetUser: MutableList<ChatUser> = mutableListOf(),
-    var type: AlertType = AlertType.INFO
+    var type: AlertType = AlertType.INFORMATION
 ) {
 
 }

@@ -11,6 +11,7 @@
         <module name="liveChat.infra.redis.main" />
         <module name="liveChat.infra.message.main" />
         <module name="liveChat.pipelines.main" />
+        <module name="liveChat.pipelines.defaultValidationProcessor.main" />
         <module name="liveChat.domain.main" />
         <module name="liveChat.infra.main" />
         <module name="liveChat.pipelines.recentChatProcessor.main" />
