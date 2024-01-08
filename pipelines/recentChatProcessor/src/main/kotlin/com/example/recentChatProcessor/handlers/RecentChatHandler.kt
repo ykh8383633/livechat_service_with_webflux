@@ -25,7 +25,6 @@ class RecentChatHandler(
     override val publisher: Publisher,
     private val objectMapper: ObjectMapper,
     private val redisService: RedisService,
-    override val allChannels: MutableList<Channel>,
     @Value("\${spring.chat.processor.step}") override val processStep: Int,
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
     @Value("\${maxRecentChat}") private val _maxLen: Long,

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component
 class SpamChatHandler(
     override val publisher: Publisher,
     private val objectMapper: ObjectMapper,
-    override val allChannels: MutableList<Channel>,
     @Value("\${spring.chat.processor.step}") override val processStep: Int,
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
 ): ChatProcessorMessageHandler() {

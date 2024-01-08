@@ -12,7 +12,11 @@ class ChatUser(
     var type: UserType = UserType.NORMAL_USER,
     var muteStartTime: Instant? = null
 ) {
-    val isMuteUser = type == UserType.MUTE_USER
+    val isMuteUser: Boolean
+        get() {
+            return type == UserType.MUTE_USER
+        }
+
     fun sendMessage(sender: ChatUser?, message: String){
         session ?: return
 

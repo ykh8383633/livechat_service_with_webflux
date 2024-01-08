@@ -17,7 +17,6 @@ class SaveChatHandler(
     override val publisher: Publisher,
     private val objectMapper: ObjectMapper,
     private val chatMessageCommand: ChatMessageCommand,
-    override val allChannels: MutableList<Channel>,
     @Value("\${spring.chat.processor.step}") override val processStep: Int,
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
     ): ChatProcessorMessageHandler() {
