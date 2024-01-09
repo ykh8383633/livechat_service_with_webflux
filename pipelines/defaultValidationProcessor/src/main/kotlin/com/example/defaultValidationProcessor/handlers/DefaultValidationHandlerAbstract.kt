@@ -20,7 +20,7 @@ class DefaultValidationHandlerAbstract(
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
     ): AbstractChatProcessPipeBase() {
 
-    override fun handle(message: String) {
+    override fun process(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
         val sender = chatMessage.sender
 

@@ -28,7 +28,7 @@ class RecentAbstractChatHandler(
 ): AbstractChatProcessPipeBase() {
     private val OUT_ALERT = messageProps.kafka.topics.outAlert;
 
-    override fun handle(message: String) {
+    override fun process(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
 
         if(chatMessage.valid != true || chatMessage.sender.isMuteUser){

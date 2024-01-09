@@ -14,7 +14,7 @@ class SpamAbstractChatHandler(
     @Value("\${spring.chat.processor.step}") override val processStep: Int,
     @Value("\${spring.chat.processor.lastStep}")override val lastStep: Int,
 ): AbstractChatProcessPipeBase() {
-    override fun handle(message: String) {
+    override fun process(message: String) {
         val chatMessage = objectMapper.readValue(message, ChatMessage::class.java)
         chatMessage.valid = checkMessage(chatMessage)
 
@@ -23,6 +23,7 @@ class SpamAbstractChatHandler(
     }
 
     private fun checkMessage(chat: ChatMessage): Boolean {
+
         return true;
     }
 }

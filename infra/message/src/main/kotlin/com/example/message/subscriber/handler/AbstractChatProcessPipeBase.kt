@@ -33,6 +33,11 @@ abstract class AbstractChatProcessPipeBase: MessageHandler {
             return _publishChannel as Channel
         }
 
+    override fun handle(message: String) {
+        process(message);
+    }
+
+    abstract fun process(message: String);
 
     open fun doNextStep(nextMessage: String){
         publisher.publish(publishChannel.channelName, nextMessage);
