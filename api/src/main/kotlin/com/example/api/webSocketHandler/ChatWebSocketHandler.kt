@@ -44,7 +44,7 @@ class ChatWebSocketHandler(
                     .map{ it.payloadAsText }
                     .doOnNext{
                         val room = chatService.findRoom(roomId)
-                        val newChat = ChatMessage(null, room, user, it, false);
+                        val newChat = ChatMessage(null, room, user, it, true);
                         chatService.inMessage(newChat);
                     }
                     .doOnTerminate{ chatService.onClose(roomId, user, session) }

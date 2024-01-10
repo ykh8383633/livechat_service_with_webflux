@@ -3,7 +3,7 @@ spring:
     name: spamProcessor
 
   profiles:
-    include: kafka, mongo
+    include: kafka, mongo, redis
 
   lifecycle:
     timeout-per-shutdown-phase: 1m
