@@ -1,6 +1,6 @@
 spring:
   data:
     mongodb:
-      host: 127.0.0.1
+      host: ec2-43-202-157-72.ap-northeast-2.compute.amazonaws.com
       port: 27017
       database: livechat

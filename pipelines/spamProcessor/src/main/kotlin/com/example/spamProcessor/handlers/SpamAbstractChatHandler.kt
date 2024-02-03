@@ -36,7 +36,7 @@ class SpamAbstractChatHandler(
     private fun checkMessage(chat: ChatMessage): Boolean {
         val result = spamChatValidator.validate(chat);
 
-        if((result.reason?:"").isNotEmpty()){
+        if(!result.reason.isNullOrEmpty()){
             _spamChatAlertMessage = result.reason;
         }
 

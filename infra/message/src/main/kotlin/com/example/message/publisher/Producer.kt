@@ -18,7 +18,7 @@ class Producer(
                 //logger.debug("${this::class.simpleName} send message : $message, offset: ${it.recordMetadata().offset()}")
                 println("publish $topic message: $message metaData: ${it.recordMetadata()}")
             }
-            .doOnError { }
+            .doOnError { println(it.message)}
             .subscribe()
     }
 

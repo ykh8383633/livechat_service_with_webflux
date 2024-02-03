@@ -40,7 +40,7 @@ class KafkaConfig(private val messageProps: MessageProperties) {
     @Bean
     fun kafkaConsumerFactory(): ConsumerFactory<String, String> {
         val configProps = getKafkaConfigBase()
-        configProps[ConsumerConfig.GROUP_ID_CONFIG] = "1"
+        configProps[ConsumerConfig.GROUP_ID_CONFIG] = "2"
 
         configProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java

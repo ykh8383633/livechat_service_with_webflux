@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  livechat_api_app:
+    build:
+      context: ./api
+    ports:
+      - "8081:8081"
+  spam_proc_app:
+    build:
+      context: ./pipelines/spamProcessor
+    ports:
+      - "8082:8082"
+  recent_chat_app:
+    build:
+      context: ./pipelines/recentChatProcessor
+    ports:
+      - "8083:8083"
+  save_chat_app:
+    build:
+      context: ./pipelines/saveChatProcessor
+    ports:
+      - "8084:8084"
+  default_validation_app:
+    build:
+      context: ./pipelines/defaultValidationProcessor
+    ports:
+      - "8085:8085"
+

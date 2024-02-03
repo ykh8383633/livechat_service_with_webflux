@@ -1,6 +1,8 @@
-/*
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
-    id("java")
+    //id("java")
 }
 
 group = "org.example"
@@ -10,11 +12,19 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs += "-Xjsr305=strict"
+        jvmTarget = "17"
+    }
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}*/
+tasks {
+    named<Jar>("jar") {
+        enabled = true
+    }
+
+    named<BootJar>("bootJar"){
+        enabled = false
+    }
+}
