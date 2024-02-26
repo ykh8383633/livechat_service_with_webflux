@@ -26,7 +26,7 @@ class DefaultValidationHandler(
 
         if(isMuteUser(sender)){
             chatMessage.valid = false;
-            jumpToLastStep(objectMapper.writeValueAsString(chatMessage))
+            //jumpToLastStep(objectMapper.writeValueAsString(chatMessage))
             return;
         }
         if(sender.type == UserType.MUTE_USER){

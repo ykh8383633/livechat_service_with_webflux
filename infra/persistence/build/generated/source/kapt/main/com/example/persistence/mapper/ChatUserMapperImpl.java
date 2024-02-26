@@ -9,7 +9,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-02-19T22:10:33+0900",
+    date = "2024-02-26T21:13:42+0900",
     comments = "version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from kotlin-annotation-processing-gradle-1.8.22.jar, environment: Java 17.0.5 (Oracle Corporation)"
 )
 public class ChatUserMapperImpl implements ChatUserMapper {

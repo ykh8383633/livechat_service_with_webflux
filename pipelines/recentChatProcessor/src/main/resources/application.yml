@@ -16,7 +16,7 @@ spring:
       step: 3
       lastStep: 4
 
-maxRecentChat: 5
+maxRecentChat: 100
 
 server:
   port: 8083

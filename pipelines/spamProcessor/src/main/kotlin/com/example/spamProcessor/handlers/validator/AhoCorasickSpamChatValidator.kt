@@ -16,6 +16,7 @@ class AhoCorasickSpamChatValidator(
     private lateinit var trie: Trie
 
     init{
+        println("aho-corasick validator is on...")
         val key = RedisKey.FORBIDDEN_WORDS.createKey(null);
         val targetWords = redisService.getAll(key)
             .toIterable()

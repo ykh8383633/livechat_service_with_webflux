@@ -1,5 +1,6 @@
 package com.example.spamProcessor.handlers
 
+import com.example.domain.enums.AlertType
 import com.example.domain.model.*
 import com.example.message.config.properties.MessageProperties
 import com.example.message.publisher.Publisher
@@ -47,7 +48,8 @@ class SpamAbstractChatHandler(
         val alert = Alert(
             message = _spamChatAlertMessage ?: "SPAM_CHAT!!",
             targetUser = mutableListOf(user),
-            room = room
+            room = room,
+            type = AlertType.SPAM
         )
         publisher.publish(OUT_ALERT, objectMapper.writeValueAsString(alert))
     }

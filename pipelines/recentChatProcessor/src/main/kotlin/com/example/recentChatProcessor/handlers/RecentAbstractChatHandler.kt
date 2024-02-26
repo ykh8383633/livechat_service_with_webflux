@@ -65,7 +65,7 @@ class RecentAbstractChatHandler(
                     it.sender.userId == chat.sender.userId }
             .count()
             .map{ userChatCount ->
-                !chat.room.allowTooMuchChatter && (userChatCount.toDouble() / _maxLen)* 100 > 20
+                !chat.room.allowTooMuchChatter && (userChatCount.toDouble() / _maxLen)* 100 > 50
             }
     }
 
